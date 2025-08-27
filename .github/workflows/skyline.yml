@@ -1,0 +1,30 @@
+name: Generate Skyline Animation
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate Skyline GIF
+        run: |
+          mkdir -p output
+          curl "https://skyline.github.com/cpiccin/2025.gif?width=800&height=600&animate=true" \
+            -o output/skyline.gif
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/skyline.gif
+          git commit -m "Update skyline animation"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
